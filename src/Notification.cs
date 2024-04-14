@@ -5,7 +5,7 @@ namespace NetworkReset;
 
 public class Notification()
 {
-    public static async Task Notify(string title, string message, string url)
+    public static async Task<bool> Notify(string title, string message, string url)
     {
         try
         {
@@ -20,10 +20,14 @@ public class Notification()
                 { "url", url }
             };
 
-            await new HttpClient().GetAsync($@"https://conesoft.net/notify" + query.ToQueryString());
+            var request = new HttpClient().GetAsync($@"https://conesoft.net/notify" + query.ToQueryString());
+            var timeout = Task.Delay(1000);
+            var result = await Task.WhenAny(timeout, request);
+            return result == request && request.IsCompletedSuccessfully;
         }
         catch (Exception)
         {
+            return false;
         }
     }
 }

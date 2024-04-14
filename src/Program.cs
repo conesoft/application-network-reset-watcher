@@ -5,8 +5,13 @@ var networkCardName = "Ethernet";
 
 using NetworkConnectivityWatcher ncw = new();
 
-var network = ncw.GetOnlineNetwork();
-await Notification.Notify("Network Reset", $"PC is {(network != null ? $"online, connected to '{network}'" : "not connected")}", "https://conesoft.net");
+var online = await Notification.Notify("Network Reset Watcher", "Conesoft Network Reset Watcher started", "https://conesoft.net");
+var resetting = !online;
+
+if (resetting)
+{
+    ResetNetworkCommand(networkCardName);
+}
 
 ncw.OnConnectivityChanged += async connectivity =>
 {
@@ -16,11 +21,20 @@ ncw.OnConnectivityChanged += async connectivity =>
     }
     if ((connectivity & Connectivity.Internet) != 0)
     {
-        await Notification.Notify("Network Reset", $"The machine is connected to Internet on {ncw.GetOnlineNetwork()}", "https://conesoft.net");
+        if(resetting == true)
+        {
+            resetting = false;
+        }
+        Console.WriteLine("The machine is back online");
+        await Notification.Notify("Network Reset Watcher", $"The machine reconnected to the Internet on '{ncw.GetOnlineNetwork()}'", "https://conesoft.net");
     }
     if ((connectivity & Connectivity.Internet) == 0)
     {
-        ResetNetworkCommand(networkCardName);
+        if (resetting == false)
+        {
+            resetting = true;
+            ResetNetworkCommand(networkCardName);
+        }
         Console.WriteLine("The machine is not connected to Internet yet");
     }
 };
@@ -29,7 +43,7 @@ ncw.StartListeningToChanges();
 
 await new TaskCompletionSource<object>().Task;
 
-static void ResetNetworkCommand(string networkCardName)
+void ResetNetworkCommand(string networkCardName)
 {
     try
     {
@@ -40,7 +54,7 @@ static void ResetNetworkCommand(string networkCardName)
         adapter.InvokeMethod("Disable", null);
         adapter.InvokeMethod("Enable", null);
     }
-    catch (Exception)
+    finally
     {
     }
 }
