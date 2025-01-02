@@ -2,16 +2,15 @@
 
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net8.0-windows</TargetFramework>
+		<TargetFramework>net9.0-windows</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<ApplicationIcon>Conesoft.Dark.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Conesoft.Hosting" Version="1.1.3" />
-		<PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
-		<PackageReference Include="System.Management" Version="8.0.0" />
+		<PackageReference Include="Conesoft.Hosting" Version="2.0.0" />
+		<PackageReference Include="System.Management" Version="9.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
